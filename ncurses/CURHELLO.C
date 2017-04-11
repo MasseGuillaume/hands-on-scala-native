@@ -22,7 +22,7 @@ int main(void) {
     exit(EXIT_FAILURE);
   }
 
-  /*  Display "Hello, world!" in the centre of the
+  /*  Display "Hello, world!" in the center of the
   screen, call refresh() to show our changes, and
   sleep() for a few seconds to get the full screen effect  */
 

@@ -20,7 +20,11 @@ cd ..
 sbt extern/run
 ```
 
-## 2. The link keyword
+## 2. Stackalloc / AnyVal
+
+sbt stackalloc/run 
+
+## 3. The link keyword
 
 The original c program
 
@@ -31,6 +35,3 @@ clang -lncurses CURHELLO.C
 (ctrl+c to exit)
 cd ..
 ```
-
-
-
