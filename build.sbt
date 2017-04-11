@@ -5,8 +5,8 @@ lazy val sharedSettings = Seq(
 lazy val `hands-on-scala-native` = project
   .in(file("."))
   .settings(sharedSettings)
-  .dependsOn(extern, ncurses, stackalloc)
-  .aggregate(extern, ncurses, stackalloc)
+  .dependsOn(extern, ncurses, stackalloc, nbwmon)
+  .aggregate(extern, ncurses, stackalloc, nbwmon)
 
 lazy val extern = project
   .enablePlugins(ScalaNativePlugin)
@@ -18,5 +18,9 @@ lazy val ncurses = project
   .settings(sharedSettings)
 
 lazy val stackalloc = project
+  .enablePlugins(ScalaNativePlugin)
+  .settings(sharedSettings)
+
+lazy val nbwmon = project
   .enablePlugins(ScalaNativePlugin)
   .settings(sharedSettings)

@@ -1,17 +1,28 @@
 package nbwmon
 
 import scala.scalanative._, native._
-import posix.unistd.sleep
 import stdlib.exit
 
 import ncurses._, ncursesh._
-
-import nbwmon.
+import posix._, posixh._
 
 object Main {
   def main(args: Array[String]): Unit = {
+    var timer = 0L
+    var redraw = false
     val tv = stackalloc[timeval]
-    gettimeofday(tv, null)
-    println(s"time: ${tv.tv_sec}(s) ${tv.tv_usec}(us)")
+
+    while(true) {
+      gettimeofday(tv, null)
+      if (timer < tv.tv_sec) {
+        timer = tv.tv_sec
+        redraw = true;
+      }
+
+      if(redraw) {
+        println("draw")
+        redraw = false
+      }
+    }
   }
 }
