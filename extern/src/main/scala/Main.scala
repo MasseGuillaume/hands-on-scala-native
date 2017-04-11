@@ -1,9 +1,8 @@
 import scalanative.native._
-import lib._
 
 object Main {
   def main(args: Array[String]): Unit = {
-    println(add(1, 1))
+    println(lib.add(1, 1))
   } 
 }
 

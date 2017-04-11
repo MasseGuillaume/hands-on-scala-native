@@ -5,13 +5,16 @@ lazy val sharedSettings = Seq(
 lazy val `hands-on-scala-native` = project
   .in(file("."))
   .settings(sharedSettings)
+  .dependsOn(extern, ncurses)
+  .aggregate(extern, ncurses)
 
 lazy val extern = project
   .in(file("extern"))
   .enablePlugins(ScalaNativePlugin)
   .settings(sharedSettings)
-  .settings(
-    nativeLinkingOptions += {
-      ((baseDirectory in ThisBuild).value / "lib.o").getAbsolutePath
-    }
-  )
+  .settings(nativeLinkingOptions += "lib.o")
+
+lazy val ncurses = project
+  .in(file("ncurses"))
+  .enablePlugins(ScalaNativePlugin)
+  .settings(sharedSettings)

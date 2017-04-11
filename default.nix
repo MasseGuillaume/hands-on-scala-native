@@ -8,11 +8,16 @@ in rec {
     CLANGPP_PATH = pkgs.clang + "/bin/clang++";
     buildInputs = with pkgs; [
       stdenv
+
+      # for scala-native
       sbt
       openjdk
       boehmgc
       libunwind
       clang
+
+      # for this demo
+      ncurses
     ];
   };
 } 
