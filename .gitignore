@@ -1,2 +1,3 @@
 target/
-lib.o
+*.o
+*.out

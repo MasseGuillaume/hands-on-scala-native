@@ -11,17 +11,14 @@ object posix {
 object posixh {
   type time_t = CLong
   type suseconds_t = CLong
-  type _timeval = CStruct2[time_t, suseconds_t]
-
+  type timeval = CStruct2[time_t, suseconds_t]
   type timezone = CStruct0
 
-  object timeval {
-    @inline def stackalloc: StringPart =
-      new timeval(native.stackalloc[_timeval])
-  }
+  implicit class timevalOps(val ptr: Ptr[timeval]) extends AnyVal {
+    @inline def tv_sec: time_t = !(ptr._1)
+    @inline def tv_usec: suseconds_t = !(ptr._2)
 
-  class timeval(val ptr: Ptr[_timeval]) extends AnyVal {
-    def tv_sec: time_t = !ptr._1
-    def tv_usec: time_t = !ptr._2
+    @inline def tv_sec_=(v: time_t): Unit = !(ptr._1) = v
+    @inline def tv_usec_=(v: suseconds_t): Unit = !(ptr._2) = v
   }
 }

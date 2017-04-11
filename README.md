@@ -22,7 +22,14 @@ sbt extern/run
 
 ## 2. Stackalloc / AnyVal
 
-sbt stackalloc/run 
+```
+sbt stackalloc/run
+
+cd stackalloc
+clang stackalloc.c
+./a.out
+cd ..
+```
 
 ## 3. The link keyword
 

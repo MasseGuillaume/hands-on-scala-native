@@ -10,7 +10,8 @@ import nbwmon.
 
 object Main {
   def main(args: Array[String]): Unit = {
-    val tv = 
-    gettimeofday(&tv, NULL)
+    val tv = stackalloc[timeval]
+    gettimeofday(tv, null)
+    println(s"time: ${tv.tv_sec}(s) ${tv.tv_usec}(us)")
   }
 }
