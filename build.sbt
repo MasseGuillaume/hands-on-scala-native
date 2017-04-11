@@ -1,5 +1,9 @@
-enablePlugins(ScalaNativePlugin)
+lazy val sharedSettings = Seq(
+  scalaVersion := "2.11.8"
+)
 
-scalaVersion := "2.11.8"
-
-nativeLinkingOptions += "./lib.o"
+lazy val extern = project
+  .in(file("extern"))
+  .enablePlugins(ScalaNativePlugin)
+  .settings(sharedSettings)
+  .settings(Helper.cCompile)
