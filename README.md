@@ -11,45 +11,52 @@ curl https://nixos.org/nix/install | sh
 nix-shell .
 ```
 
-## 1. The extern keyword
+## Original C program
+
+[Nbwmon: Ncurse sbandwidth monitor](https://github.com/causes-/nbwmon)
+
+┌[ 1.59 KiB/s ]─────────[ nbwmon-0.6 | interface: wlp4s0 ]────────────[ Received ]┐
+│-              *                                                                 │
+│-              *                                                           *     │
+│-              *                                                           *     │
+│-              *              *                                            *     │
+│-              *              *                                            *     │
+│-              *              *            *                               *     │
+│-              *          *   *            * *                             *     │
+│-              *          *   *            * *                             *    *│
+│-              *          *   *   *       ****                         *   **   *│
+│-              *   *      *   *   **      **** *           *           *   **   *│
+│-              *   **     *   *   ***  *  **** * ** * **   *    *      *  ***   *│
+└[ 0 B/s ]────────────────────────────────────────────────────────────────────────┘
+┌[ 3.74 KiB/s ]────────────────────────────────────────────────────[ Transmitted ]┐
+│-                                          *                                     │
+│-                                          *                                     │
+│-                                          *                                     │
+│-                                          *                                     │
+│-                                          *                                     │
+│-                                          *                                     │
+│-                                          *                               *     │
+│-              *                           *                               *     │
+│-              *          *   *            **                              *     │
+│-              *          *   *   **      ****                         *   *    *│
+│-              *   **     *   *   **** *  **** * ** * **   *    *  *   *  **    *│
+└[ 0 B/s ]────────────────────────────────────────────────────────────────────────┘
+┌[ Received ]───────────────────────────┐┌[ Transmitted ]─────────────────────────┐
+│Current:                        384 B/s││Current:                         564 B/s│
+│Maximum:                     1.59 KiB/s││Maximum:                      3.74 KiB/s│
+│Average:                        113 B/s││Average:                         164 B/s│
+│Minimum:                          0 B/s││Minimum:                           0 B/s│
+│Total:                         3.65 GiB││Total:                          2.88 GiB│
+│                                       ││                                        │
+└───────────────────────────────────────┘└────────────────────────────────────────┘
+
+## Running
 
 ```
-cd extern
-clang -c lib.c
-cd ..
-
-sbt extern/run
+sbt
+> ~nativeLink
 ```
 
-## 2. Stackalloc / AnyVal
-
 ```
-sbt stackalloc/run
-
-cd stackalloc
-clang stackalloc.c
-./a.out
-cd ..
-```
-
-## 3. The link keyword
-
-The original c program
-
-```
-cd ncurses
-clang -lncurses CURHELLO.C
-./a.out 
-(ctrl+c to exit)
-cd ..
-```
-
-## 4. Debuging
-
-TODO create segfault demo
-
-```
-lldb nbwmon/target/scala-2.11/nbwmon-out
-> run
-> bt
+./run
 ```

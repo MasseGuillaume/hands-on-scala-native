@@ -19,33 +19,33 @@ import ifaddrs._, ifaddrsh._
   [4] draw windows
      * ncurses api 
   [5] draw bitrate windows
-
 */
 
 object Main {
   def main(args: Array[String]): Unit = {
+    
+    findInterface.foreach(println)
 
-    println(findInterface())
 
-    // var timer = 0L
-    // var redraw = false
-    // val tv = stackalloc[timeval]
+    var timer = 0L
+    var redraw = false
+    val tv = stackalloc[timeval]
 
-    // while(true) {
-    //   gettimeofday(tv, null)
-    //   if (timer < tv.tv_sec) {
-    //     timer = tv.tv_sec
-    //     redraw = true;
-    //   }
+    while(true) {
+      gettimeofday(tv, null)
+      if (timer < tv.tv_sec) {
+        timer = tv.tv_sec
+        redraw = true;
+      }
 
-    //   if(redraw) {
-    //     println("draw")
-    //     redraw = false
-    //   }
-    // }
+      if(redraw) {
+        println("draw")
+        redraw = false
+      }
+    }
   }
 
-  def findInterface(): Option[CString] = {
+  def findInterface: Option[String] = {
     val ifaddrs = stackalloc[Ptr[ifaddrs]]
     var ifa = stackalloc[ifaddrs]
 
@@ -55,15 +55,11 @@ object Main {
       var found = false
       while(ifa != null && !found) {
         import SiocgifFlags._
-        
-        fwrite(ifa.name, sizeof[CChar], InterfaceNameSize, stdout)
-        println(": " + ifa.flags)
 
         if((ifa.flags & Up) &&
            (ifa.flags & Running) &&
           !(ifa.flags & Loopback)
         ) {
-          println("found")
           found = true
         }
         else {
@@ -72,11 +68,7 @@ object Main {
       }
 
       val ret =
-        if(found) {
-          None
-          // val cstr = GC.malloc(sizeof[CChar] * InterfaceNameSize).cast[Ptr[CChar]]
-          // Some(strncpy(cstr, ifa.name, InterfaceNameSize))
-        }
+        if(found) Some(fromCString(ifa.name))
         else None
 
       freeifaddrs(!ifaddrs)
