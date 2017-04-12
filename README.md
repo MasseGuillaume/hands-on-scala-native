@@ -4,10 +4,11 @@
 
 see http://www.scala-native.org/en/latest/user/setup.html
 
+or
+
 ```
 curl https://nixos.org/nix/install | sh
 nix-shell .
-
 ```
 
 ## 1. The extern keyword
@@ -41,4 +42,14 @@ clang -lncurses CURHELLO.C
 ./a.out 
 (ctrl+c to exit)
 cd ..
+```
+
+## 4. Debuging
+
+TODO create segfault demo
+
+```
+lldb nbwmon/target/scala-2.11/nbwmon-out
+> run
+> bt
 ```

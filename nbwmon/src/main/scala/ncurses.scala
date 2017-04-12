@@ -1,5 +1,3 @@
-package nbwmon
-
 import scalanative.native._
 
 @link("ncurses")
