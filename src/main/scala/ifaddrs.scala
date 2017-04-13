@@ -1,3 +1,5 @@
+package nbwmon
+
 import scalanative.native._
 import scalanative.runtime.undefined
 
