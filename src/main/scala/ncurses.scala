@@ -4,11 +4,11 @@ import scalanative.native._
 @extern
 object ncurses {
   import ncursesh._
-  def initscr(): Ptr[Window] = extern
+  def initscr(): Ptr[Window]            = extern
   def delwin(window: Ptr[Window]): Unit = extern
-  def endwin(): Unit = extern
+  def endwin(): Unit                    = extern
 }
 
 object ncursesh {
   type Window = CStruct0
-} 
+}
