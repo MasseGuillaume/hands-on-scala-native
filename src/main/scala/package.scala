@@ -1,7 +1,9 @@
 import scala.scalanative._, native._
 
 package object nbwmon {
-    trait CUnsignedLongIsIntegral extends Integral[CUnsignedLong] {
+  def clear() = print("\033c")
+
+  trait CUnsignedLongIsIntegral extends Integral[CUnsignedLong] {
     def plus(x: CUnsignedLong, y: CUnsignedLong): CUnsignedLong = x + y
     def minus(x: CUnsignedLong, y: CUnsignedLong): CUnsignedLong = x - y
     def times(x: CUnsignedLong, y: CUnsignedLong): CUnsignedLong = x * y

@@ -93,31 +93,8 @@ object IfaddrsH {
   // format: on
 
   implicit class RtnlLinkStatsOps(val ptr: Ptr[RtnlLinkStats]) extends AnyVal {
-    def rxPackets: CUnsignedInt         = !(ptr._1)
-    def txPackets: CUnsignedInt         = !(ptr._2)
-    def rxBytes: CUnsignedInt           = !(ptr._3)
-    def txBytes: CUnsignedInt           = !(ptr._4)
-    def rxErrors: CUnsignedInt          = !(ptr._5)
-    def txErrors: CUnsignedInt          = !(ptr._6)
-    def rxDropped: CUnsignedInt         = !(ptr._7)
-    def txDropped: CUnsignedInt         = !(ptr._8)
-    def multicast: CUnsignedInt         = !(ptr._9)
-    def collisions: CUnsignedInt        = !(ptr._10)
-    def rxLengthErrors: CUnsignedInt    = !(ptr._11)
-    def rxOverErrors: CUnsignedInt      = !(ptr._12)
-    def rxCrcErrors: CUnsignedInt       = !(ptr._13)
-    def rxFrameErrors: CUnsignedInt     = !(ptr._14)
-    def rxFifoErrors: CUnsignedInt      = !(ptr._15)
-    def rxMissedErrors: CUnsignedInt    = !(ptr._16)
-    def txAbortedErrors: CUnsignedInt   = !(ptr._17)
-    def txCarrierErrors: CUnsignedInt   = !(ptr._18)
-    def txFifoErrors: CUnsignedInt      = !(ptr._19)
-    def txHeartbeatErrors: CUnsignedInt = !(ptr._20)
-    def txWindowErrors: CUnsignedInt    = !(ptr._21)
-    def rxCompressed: CUnsignedInt      = !(ptr._22)
-
-    // def txCompressed: CUnsignedInt = !(ptr._23),
-    // def rxNohandler: CUnsignedInt = !(ptr._24)
+    def rxBytes: CUnsignedInt = !(ptr._3)
+    def txBytes: CUnsignedInt = !(ptr._4)
   }
 
   class SaFamily(val value: CInt) extends AnyVal
