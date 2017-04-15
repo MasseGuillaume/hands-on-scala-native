@@ -23,6 +23,8 @@ object IfaddrsH {
     // ...
   }
 
+  // see scala-native#378
+
   // format: off
   type Ifaddrs = CStruct7[
     // scala-native#634 should be Ptr[Ifaddrs]
@@ -46,6 +48,7 @@ object IfaddrsH {
     def data: Ptr[Byte]     = !(ptr._7)
     // format: on
 
+    // scala-native#367 we need to manually box Ptr[T]
     def iterator: Iterator[IfaddrsOps] = new Iterator[IfaddrsOps] {
       private var current = new IfaddrsOps(ptr)
 

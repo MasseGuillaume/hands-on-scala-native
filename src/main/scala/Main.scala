@@ -41,8 +41,6 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
-    clear()
-
     val interfaceName =
       findInterface match {
         case Some(name) => name
@@ -52,7 +50,29 @@ object Main {
         }
       }
 
-    println(interfaceName)
+    val mainWindow = initialzeScreen()
+    setCursorVisibility(CursorVisibility.Visible)
+    noecho()
+    timeout(10)
+
+
+    val (green, red) = 
+      if(hasColors()) {
+        startColor()
+        useDefaultColors()
+        val greenIndex = 1.toShort
+        val redIndex = 2.toShort
+        initPair(greenIndex, foreground = Color.Green, background = Color.Transparent)
+        initPair(redIndex, foreground = Color.Red, background = Color.Transparent)
+
+        (Some(colorPair(greenIndex)), Some(colorPair(redIndex)))
+      }
+      else (None, None)
+
+
+    val size = windowSize(stdscr)
+    println(size)
+    
 
     // size depends on screen size
     val history = CountersHistory.empty(140)
@@ -61,8 +81,14 @@ object Main {
       getCounter(interfaceName).foreach(data =>
         history += data
       )
-
-      history.print()
     }
+
+
+    // delwin(rxgraph)
+    // delwin(txgraph)
+    // delwin(rxstats)
+    // delwin(txstats)
+    deleteWindow(mainWindow)
+    endWindow()
   } 
 }
