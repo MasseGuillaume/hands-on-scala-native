@@ -33,6 +33,10 @@ class CountersHistory private(maxSize: Int,
     this
   }
 
+  def apply(i: Int): Option[Counters] = 
+    if(i >= queue.size) None
+    else Some(queue(i))
+  
   def current(f: Counters => CUnsignedLong): Option[Double] =
     lastElement.map(f).map(_.toDouble)
 

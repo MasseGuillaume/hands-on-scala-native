@@ -35,6 +35,10 @@ object ncurses {
 
   def mvwprintw(window: Ptr[Window], y: CInt, x: CInt, fmt: CString, args: CVararg*): CInt = extern
 
+  def mvwaddch(window: Ptr[Window], y: CInt, x: CInt, ch: ChType): CInt = extern
+
+  def mvwvline(WINDwindow: Ptr[Window], y: CInt, x: CInt, ch: ChType, n: CInt): CInt = extern
+
   def noecho(): Unit = extern
 
   def getch(): CInt = extern
@@ -49,6 +53,12 @@ object ncurses {
 
   @name("use_default_colors")
   def useDefaultColors(): Unit = extern
+
+  @name("wattron")
+  def attributeOn(window: Ptr[Window], attribute: Attribute): CInt = extern
+
+  @name("wattroff")
+  def attributeOff(window: Ptr[Window], attribute: Attribute): CInt = extern
 
   @name("init_pair")
   def initPair(pair: CShort, foreground: Color, background: Color): CInt = extern
