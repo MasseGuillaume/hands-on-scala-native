@@ -2,6 +2,7 @@ package nbwmon
 
 import scalanative.native._
 
+// scala-native#104 should provide those bindings
 @extern
 object posix {
   import posixh._
@@ -9,6 +10,8 @@ object posix {
 }
 
 object posixh {
+  type va_list = CStruct0
+
   type time_t      = CLong
   type suseconds_t = CLong
   type timeval     = CStruct2[time_t, suseconds_t]

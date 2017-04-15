@@ -2,6 +2,8 @@ package nbwmon
 
 import scalanative.native._
 
+// http://invisible-island.net/ncurses/man/ncurses.3x.html
+
 @link("ncurses")
 @extern
 object ncurses {
@@ -13,13 +15,29 @@ object ncurses {
   @name("curs_set")
   def setCursorVisibility(visibility: CursorVisibility): CInt = extern
 
+  @name("newwin")
+  def newWindow(nlines: Int, ncols: Int, begin_y: Int, begin_x: Int): Ptr[Window] = extern
+
   @name("delwin")
   def deleteWindow(window: Ptr[Window]): Unit = extern
 
   @name("endwin")
   def endWindow(): Unit = extern
 
+  @name("werase")
+  def eraseWindow(window: Ptr[Window]): CInt = extern
+
+  def wnoutrefresh(window: Ptr[Window]): CInt = extern
+
+  def doupdate(): CInt = extern
+
+  def box(window: Ptr[Window], verch: ChType, horch: ChType): CInt = extern
+
+  def mvwprintw(window: Ptr[Window], y: CInt, x: CInt, fmt: CString, args: CVararg*): CInt = extern
+
   def noecho(): Unit = extern
+
+  def getch(): CInt = extern
 
   def timeout(delay: CInt): Unit = extern
 
@@ -48,6 +66,8 @@ object ncurses {
 }
 
 object ncursesh {
+
+  type ChType = CChar
 
   case class Size(width: Int, height: Int)
 

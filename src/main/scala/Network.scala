@@ -5,6 +5,10 @@ import scala.scalanative._, native._
 import Ifaddrs._, IfaddrsH._
 import collection.mutable.Queue
 
+sealed trait Way
+case object RX extends Way
+case object TX extends Way
+
 object CountersHistory {
   def empty(maxSize: Int): CountersHistory =
     new CountersHistory(maxSize, None, None, Queue.empty[Counters])
@@ -29,39 +33,25 @@ class CountersHistory private(maxSize: Int,
     this
   }
 
-  def print(): Unit = {
-    rxCurrent match {
-      case Some(current) => {
-        val si = Array("B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-        val prefix = 1000.0
+  def current(f: Counters => CUnsignedLong): Option[Double] =
+    lastElement.map(f).map(_.toDouble)
 
-        var bytes = current.toDouble
-        var i = 0
-        while(bytes > prefix) {
-          bytes = bytes / prefix
-          i += 1
-        }
+  def maximum(f: Counters => CUnsignedLong): Option[Double] = 
+    stats(q => f(q.maxBy(f)).toDouble)
 
-        clear()
-        println(bytes + " " + si(i) + "/s")
-      }
-      case _ => () 
-    }
+  def minimum(f: Counters => CUnsignedLong): Option[Double] =
+    stats(q => f(q.minBy(f)).toDouble)
+
+  def total(f: Counters => CUnsignedLong): Option[Double] =
+    stats(q => q.map(f).sum.toDouble)
+
+  def average(f: Counters => CUnsignedLong): Option[Double] =
+    total(f).map(_ / queue.size.toDouble)
+
+  private def stats(statsF: Queue[Counters] => Double): Option[Double] = {
+    if(queue.isEmpty) None
+    else Some(statsF(queue))
   }
-
-  def rxCurrent: Option[CUnsignedLong] = lastElement.map(_.rx)
-
-  def rxMaximum: Option[CUnsignedLong] = 
-    if(queue.isEmpty) None 
-    else Some(queue.maxBy(_.rx).rx)
-
-  def rxMinimum: Option[CUnsignedLong] =
-    if(queue.isEmpty) None
-    else Some(queue.minBy(_.rx).rx)
-
-  def rxAverage: Option[Double] =
-    if(queue.isEmpty) None
-    else Some((queue.map(_.rx).sum.toDouble / queue.size.toDouble))
 }
 
 case class Counters(val rx: CUnsignedLong, val tx: CUnsignedLong) {

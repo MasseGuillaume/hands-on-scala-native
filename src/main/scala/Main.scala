@@ -40,7 +40,62 @@ object Main {
     }
   }
 
+  def printGraphWindow(window: Ptr[Window],
+                       title: CString,
+                       interfaceName: Option[String],
+                       color: Option[Attribute],
+                       // size: Size,
+                       history: CountersHistory): Unit = {
+
+  }
+
+  def showBytes(rate: Double): String = {
+    val si = Array("B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+    val prefix = 1000.0
+
+    var bytes = rate
+    var i = 0
+    while(bytes > prefix) {
+      bytes = bytes / prefix
+      i += 1
+    }
+
+    bytes + " " + si(i) + "/s"
+  }
+
+  def printStatsWindow(window: Ptr[Window],
+                       title: CString,
+                       history: CountersHistory,
+                       project: Counters => CUnsignedLong): Unit = {
+
+    eraseWindow(window)
+    box(window, 0, 0)
+
+    mvwprintw(window, 0, 1, c"[ %s ]", title)
+
+    val stats = List(
+      ("Current", history.current(project)),
+      ("Maximum", history.maximum(project)),
+      ("Minimum", history.minimum(project)),
+      ("Average", history.average(project)),
+      ("Total", history.total(project))
+    )
+
+    stats.zipWithIndex.foreach{ case ((label, stat), line) => 
+      mvwprintw(
+        window,
+        line + 1,
+        1, 
+        toCString(label + stat.map(showBytes).getOrElse("Not Available"))
+      )
+    }
+
+    wnoutrefresh(window)
+  }
+
+
   def main(args: Array[String]): Unit = {
+
     val interfaceName =
       findInterface match {
         case Some(name) => name
@@ -54,7 +109,6 @@ object Main {
     setCursorVisibility(CursorVisibility.Visible)
     noecho()
     timeout(10)
-
 
     val (green, red) = 
       if(hasColors()) {
@@ -71,23 +125,39 @@ object Main {
 
 
     val size = windowSize(stdscr)
-    println(size)
-    
+    // println(size)
 
-    // size depends on screen size
-    val history = CountersHistory.empty(140)
+    val history = CountersHistory.empty(size.width)
+
+    val graphHeight = (size.height - 7) / 2
+    val statsHeight = size.height - graphHeight
+
+    val rxGraph = newWindow(graphHeight, size.width, 0, 0)
+    val txGraph = newWindow(graphHeight, size.width, graphHeight, 0)
+    val rxStats = newWindow(statsHeight, size.width / 2, size.height, 0)
+    val txStats = newWindow(statsHeight, size.width / 2, size.height, size.width / 2)
 
     waitLoop {
       getCounter(interfaceName).foreach(data =>
         history += data
       )
+
+      // printGraphWindow(rxGraph, c"Received", Some(interfaceName), green, history)
+      // printGraphWindow(txGraph, c"Transmitted", None, red, history)
+
+      printStatsWindow(rxGraph, c"Received", history, _.rx)
+      printStatsWindow(txGraph, c"Transmitted", history, _.tx)
+
+      printStatsWindow(rxStats, c"Received", history, _.rx)
+      printStatsWindow(txStats, c"Transmitted", history, _.tx)
+
+      doupdate()
     }
 
-
-    // delwin(rxgraph)
-    // delwin(txgraph)
-    // delwin(rxstats)
-    // delwin(txstats)
+    deleteWindow(rxGraph)
+    deleteWindow(txGraph)
+    deleteWindow(rxStats)
+    deleteWindow(txStats)
     deleteWindow(mainWindow)
     endWindow()
   } 
