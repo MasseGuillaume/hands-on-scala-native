@@ -125,17 +125,15 @@ object Main {
 
 
     val size = windowSize(stdscr)
-    // println(size)
-
     val history = CountersHistory.empty(size.width)
 
     val graphHeight = (size.height - 7) / 2
-    val statsHeight = size.height - graphHeight
+    val statsHeight = size.height - graphHeight * 2
 
     val rxGraph = newWindow(graphHeight, size.width, 0, 0)
     val txGraph = newWindow(graphHeight, size.width, graphHeight, 0)
-    val rxStats = newWindow(statsHeight, size.width / 2, size.height, 0)
-    val txStats = newWindow(statsHeight, size.width / 2, size.height, size.width / 2)
+    val rxStats = newWindow(statsHeight, size.width / 2, graphHeight * 2, 0)
+    val txStats = newWindow(statsHeight, size.width - size.width / 2, graphHeight * 2, size.width / 2)
 
     waitLoop {
       getCounter(interfaceName).foreach(data =>
