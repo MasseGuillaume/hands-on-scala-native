@@ -11,21 +11,34 @@ case object TX extends Way
 
 object CountersHistory {
   def empty(maxSize: Int): CountersHistory =
-    new CountersHistory(maxSize, None, None, Queue.empty[Counters])
+    new CountersHistory(
+      maxSize,
+      None,
+      None,
+      Queue.empty[CUnsignedLong],
+      Queue.empty[CUnsignedLong]
+    )
 }
 
 class CountersHistory private(maxSize: Int,
                               private var lastTotal: Option[Counters],
                               private var lastElement: Option[Counters],
-                              queue: Queue[Counters]){
+                              txQueue: Queue[CUnsignedLong],
+                              rxQueue: Queue[CUnsignedLong]){
   def +=(v: Counters): this.type = {
-    lastTotal.foreach{lv =>
-      if(queue.size > maxSize) {
-        queue.dequeue()
+    lastTotal.foreach{ lv =>
+      if(txQueue.size > maxSize) {
+        txQueue.dequeue()
       }
+
+      if(rxQueue.size > maxSize) {
+        rxQueue.dequeue()
+      }
+
       val t = v - lv
       lastElement = Some(t)
-      queue += t
+      rxQueue += t.rx
+      txQueue += t.tx
     }
 
     lastTotal = Some(v)
@@ -33,26 +46,43 @@ class CountersHistory private(maxSize: Int,
     this
   }
 
-  def apply(i: Int): Option[Counters] = 
+  def apply(way: Way, i: Int): Option[CUnsignedLong] = {
+    val queue = q(way)
+
     if(i >= queue.size) None
     else Some(queue(i))
-  
-  def current(f: Counters => CUnsignedLong): Option[Double] =
-    lastElement.map(f).map(_.toDouble)
+  }
 
-  def maximum(f: Counters => CUnsignedLong): Option[Double] = 
-    stats(q => f(q.maxBy(f)).toDouble)
+  private def q(way: Way): Queue[CUnsignedLong] = 
+    way match {
+      case RX => rxQueue
+      case TX => txQueue
+    }
 
-  def minimum(f: Counters => CUnsignedLong): Option[Double] =
-    stats(q => f(q.minBy(f)).toDouble)
+  private def l(way: Way)(c: Counters): CUnsignedLong =
+    way match {
+      case RX => c.rx
+      case TX => c.tx
+    }
 
-  def total(f: Counters => CUnsignedLong): Option[Double] =
-    stats(q => q.map(f).sum.toDouble)
+  def current(way: Way): Option[Double] =
+    lastElement.map(l(way)).map(_.toDouble)
 
-  def average(f: Counters => CUnsignedLong): Option[Double] =
-    total(f).map(_ / queue.size.toDouble)
+  def maximum(way: Way): Option[Double] =
+    stats(way, _.max.toDouble)
 
-  private def stats(statsF: Queue[Counters] => Double): Option[Double] = {
+  def minimum(way: Way): Option[Double] =
+    stats(way, _.min.toDouble)
+
+  def total(way: Way): Option[Double] =
+    stats(way, _.sum.toDouble)
+
+  def average(way: Way): Option[Double] =
+    total(way).map(_ / q(way).size.toDouble)
+
+  private def stats(way: Way, statsF: Queue[CUnsignedLong] => Double): Option[Double] = {
+    val queue = q(way)
+
     if(queue.isEmpty) None
     else Some(statsF(queue))
   }

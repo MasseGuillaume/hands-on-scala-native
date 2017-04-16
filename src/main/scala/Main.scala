@@ -47,7 +47,7 @@ object Main {
                        interfaceName: Option[String],
                        color: Option[Attribute],
                        history: CountersHistory,
-                       project: Counters => CUnsignedLong): Unit = {
+                       way: Way): Unit = {
 
     val size = windowSize(window)
     eraseWindow(window)
@@ -72,31 +72,15 @@ object Main {
       mvwprintw(window, 0, center, toCString(text));
     }
 
-    (history.minimum(project), history.maximum(project)) match {
+    (history.minimum(way), history.maximum(way)) match {
       case (Some(min), Some(max)) => {
         val (rate, unit) = showBytes(max)
-        mvwprintw(window, 0, 1, c"[ %.2f%s/s ]", rate, toCString(unit))
+        mvwprintw(window, 0, 1, c"[ %3.2f%s/s ]", rate, toCString(unit))
     
         color.foreach(c => attributeOn(window, c))
 
-        // mvwaddch
 
-        var i = 0
-        var j = 0
-
-        while(i < (size.height - 2)) {
-          while(j < (size.width - 3)) {
-            history(j).map(project).foreach{ elem =>
-              val height = 
-                size.height - 3 - (elem.toDouble / max.toDouble * size.height.toDouble)
-              if(height < i) {
-                mvwaddch(window, i + 1, j + 2, '*')
-              }
-            }
-            j += 1
-          }
-          i += 1
-        }
+        // mvwaddch(window, i + 1, j + 2, '*')
 
         color.foreach(c => attributeOff(window, c))
       }
@@ -107,7 +91,7 @@ object Main {
   }
 
   def showBytes(rate: Double): (Double, String) = {
-    val si = Array("B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+    val si = Array(" B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
     val prefix = 1000.0
 
     var bytes = rate
@@ -124,7 +108,7 @@ object Main {
   def printStatsWindow(window: Ptr[Window],
                        title: CString,
                        history: CountersHistory,
-                       project: Counters => CUnsignedLong): Unit = {
+                       way: Way): Unit = {
 
     eraseWindow(window)
     box(window, 0, 0)
@@ -132,11 +116,11 @@ object Main {
     mvwprintw(window, 0, 1, c"[ %s ]", title)
 
     val stats = List(
-      ("Current", history.current(project)),
-      ("Maximum", history.maximum(project)),
-      ("Minimum", history.minimum(project)),
-      ("Average", history.average(project)),
-      ("Total  ", history.total(project))
+      ("Current", history.current(way)),
+      ("Maximum", history.maximum(way)),
+      ("Minimum", history.minimum(way)),
+      ("Average", history.average(way)),
+      ("Total  ", history.total(way))
     )
 
     val size = windowSize(window)
@@ -149,8 +133,7 @@ object Main {
           window,
           line,
           1,
-          // we cannot use c"..." here scala-native#640
-          toCString("%s %.2f %s/s"),
+          toCString("%s %12.2f %s/s"),
           toCString(label),
           rate,
           toCString(unit)
@@ -209,11 +192,11 @@ object Main {
         history += data
       )
 
-      printGraphWindow(rxGraph, "Received", Some(interfaceName), green, history, _.rx)
-      printGraphWindow(txGraph, "Transmitted", None, red, history, _.tx)
+      printGraphWindow(rxGraph, "Received", Some(interfaceName), green, history, RX)
+      printGraphWindow(txGraph, "Transmitted", None, red, history, TX)
 
-      printStatsWindow(rxStats, c"Received", history, _.rx)
-      printStatsWindow(txStats, c"Transmitted", history, _.tx)
+      printStatsWindow(rxStats, c"Received", history, RX)
+      printStatsWindow(txStats, c"Transmitted", history, TX)
 
       doupdate()
     }
