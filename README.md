@@ -15,6 +15,7 @@ nix-shell .
 
 [Nbwmon: Ncurse sbandwidth monitor](https://github.com/causes-/nbwmon)
 
+```
 ┌[ 1.59 KiB/s ]─────────[ nbwmon-0.6 | interface: wlp4s0 ]────────────[ Received ]┐
 │-              *                                                                 │
 │-              *                                                           *     │
@@ -49,6 +50,7 @@ nix-shell .
 │Total:                         3.65 GiB││Total:                          2.88 GiB│
 │                                       ││                                        │
 └───────────────────────────────────────┘└────────────────────────────────────────┘
+```
 
 ## Running
 
