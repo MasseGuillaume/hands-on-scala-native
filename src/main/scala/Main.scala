@@ -16,8 +16,8 @@ import Network._
   [x] 1: refresh loop
   [x] 2: fing network interface (ifaddrs api)
   [x] 3: display bitrate
-  [ ] 4: draw windows (ncurses api)
-  [ ] 5: draw bitrate windows
+  [x] 4: draw windows (ncurses api)
+  [x] 5: draw bitrate windows
 */
 
 object Main {
@@ -56,7 +56,6 @@ object Main {
     // fade out the left column
     mvwvline(window, 0, 1, '-', size.height - 1)
 
-    
     val padding = 5
     mvwprintw(
       window,
@@ -72,26 +71,36 @@ object Main {
       mvwprintw(window, 0, center, toCString(text));
     }
 
-    (history.minimum(way), history.maximum(way)) match {
-      case (Some(min), Some(max)) => {
-        val (rate, unit) = showBytes(max)
-        mvwprintw(window, 0, 1, c"[ %3.2f%s/s ]", rate, toCString(unit))
-    
-        color.foreach(c => attributeOn(window, c))
+    history.maximum(way).foreach{ max =>
+      val (rate, unit) = showBytes(max)
+  
+      mvwprintw(window, 0, 1, c"[%.2f %s/s]", rate, toCString(unit))
 
+      color.foreach(c => attributeOn(window, c))
 
-        // mvwaddch(window, i + 1, j + 2, '*')
+      history.getQueue(way).reverse.zipWithIndex.foreach{ case (value, i) =>
+        val col = size.width - i - 2
 
-        color.foreach(c => attributeOff(window, c))
+        val border = 2
+        val h = Math.ceil(value.toDouble / max.toDouble * (size.height - border).toDouble)
+
+        var j = size.height - 2
+        var jj = 0
+        while(j > 0 && jj < h) {
+          mvwaddch(window, j, col, '*')
+          j -= 1
+          jj += 1
+        }
       }
-      case _ => ()
+
+      color.foreach(c => attributeOff(window, c))
     }
 
     wnoutrefresh(window)
   }
 
   def showBytes(rate: Double): (Double, String) = {
-    val si = Array(" B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+    val si = Array(" ", "k", "M", "G", "T")
     val prefix = 1000.0
 
     var bytes = rate
@@ -101,8 +110,7 @@ object Main {
       i += 1
     }
 
-
-    (bytes, si(i))
+    (bytes, si(i) + "B")
   }
 
   def printStatsWindow(window: Ptr[Window],
@@ -116,30 +124,30 @@ object Main {
     mvwprintw(window, 0, 1, c"[ %s ]", title)
 
     val stats = List(
-      ("Current", history.current(way)),
-      ("Maximum", history.maximum(way)),
-      ("Minimum", history.minimum(way)),
-      ("Average", history.average(way)),
-      ("Total  ", history.total(way))
+      ("Current", history.current(way), true),
+      ("Maximum", history.maximum(way), true),
+      ("Average", history.average(way), true),
+      ("Minimum", history.minimum(way), true),
+      ("Total  ", history.total(way), false)
     )
 
     val size = windowSize(window)
 
-    stats.zipWithIndex.foreach{ case ((label, stat), i) =>
+    stats.zipWithIndex.foreach{ case ((label, stat, isRate), i) =>
       val line = i + 1
 
-      stat.map(showBytes).foreach{ case (rate, unit) =>
+      stat.map(showBytes).foreach{ case (value, unit) =>
+        val fmt = "%s %12.2f %s" + (if(isRate) "/s" else "")
         mvwprintw(
           window,
           line,
           1,
-          toCString("%s %12.2f %s/s"),
+          toCString(fmt),
           toCString(label),
-          rate,
+          value,
           toCString(unit)
         )
       }
-
     }
 
     wnoutrefresh(window)
@@ -177,10 +185,12 @@ object Main {
 
 
     val size = windowSize(stdscr)
-    val history = CountersHistory.empty(size.width)
+    
 
     val graphHeight = (size.height - 7) / 2
     val statsHeight = size.height - graphHeight * 2
+
+    val history = CountersHistory.empty(size.width - 4)
 
     val rxGraph = newWindow(graphHeight, size.width, 0, 0)
     val txGraph = newWindow(graphHeight, size.width, graphHeight, 0)

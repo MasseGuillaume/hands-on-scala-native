@@ -46,14 +46,7 @@ class CountersHistory private(maxSize: Int,
     this
   }
 
-  def apply(way: Way, i: Int): Option[CUnsignedLong] = {
-    val queue = q(way)
-
-    if(i >= queue.size) None
-    else Some(queue(i))
-  }
-
-  private def q(way: Way): Queue[CUnsignedLong] = 
+  def getQueue(way: Way): Queue[CUnsignedLong] = 
     way match {
       case RX => rxQueue
       case TX => txQueue
@@ -75,13 +68,13 @@ class CountersHistory private(maxSize: Int,
     stats(way, _.min.toDouble)
 
   def total(way: Way): Option[Double] =
-    stats(way, _.sum.toDouble)
-
+    lastTotal.map(l(way)).map(_.toDouble)
+    
   def average(way: Way): Option[Double] =
-    total(way).map(_ / q(way).size.toDouble)
+    stats(way, q => q.sum.toDouble / q.size.toDouble)
 
   private def stats(way: Way, statsF: Queue[CUnsignedLong] => Double): Option[Double] = {
-    val queue = q(way)
+    val queue = getQueue(way)
 
     if(queue.isEmpty) None
     else Some(statsF(queue))
