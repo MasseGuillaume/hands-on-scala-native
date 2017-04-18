@@ -21,15 +21,13 @@ import Network._
 */
 
 object Main {
-  def waitLoop(ci: Boolean)(body: => Unit): Unit = {
+  def waitLoop(body: => Unit): Unit = {
     var timer  = 0L
     var redraw = false
     val tv     = stackalloc[timeval]
-    var i = 0
-    var ciOk = true
     var key = 0
 
-    while (key != 'q' && ciOk) {
+    while (key != 'q') {
       gettimeofday(tv, null)
       if (timer < tv.tv_sec) {
         timer = tv.tv_sec
@@ -41,10 +39,6 @@ object Main {
         redraw = false
       }
       key = getch()
-      if(ci && redraw) {
-        i += 1
-        ciOk = i < 10
-      }
     }
   }
 
@@ -205,7 +199,7 @@ object Main {
     val rxStats = newWindow(statsHeight, size.width / 2, graphHeight * 2, 0)
     val txStats = newWindow(statsHeight, size.width - size.width / 2, graphHeight * 2, size.width / 2)
 
-    waitLoop(ci) {
+    waitLoop {
       getCounter(interfaceName).foreach(data =>
         history += data
       )
