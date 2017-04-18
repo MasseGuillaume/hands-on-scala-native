@@ -54,10 +54,10 @@ object Main {
     box(window, 0, 0)
 
     // fade out the left column
-    mvwvline(window, 0, 1, '-', size.height - 1)
+    printLine(window, 0, 1, '-', size.height - 1)
 
     val padding = 5
-    mvwprintw(
+    printFormatted(
       window,
       0, 
       size.width - padding - title.size,
@@ -68,13 +68,13 @@ object Main {
     interfaceName.foreach{ name =>
       val text = s"[ snbwmon | interface: $name ]"
       val center = (size.width - text.size) / 2
-      mvwprintw(window, 0, center, toCString(text));
+      printFormatted(window, 0, center, toCString(text));
     }
 
     history.maximum(way).foreach{ max =>
       val (rate, unit) = showBytes(max)
   
-      mvwprintw(window, 0, 1, c"[%.2f %s/s]", rate, toCString(unit))
+      printFormatted(window, 0, 1, c"[%.2f %s/s]", rate, toCString(unit))
 
       color.foreach(c => attributeOn(window, c))
 
@@ -87,7 +87,7 @@ object Main {
         var j = size.height - 2
         var jj = 0
         while(j > 0 && jj < h) {
-          mvwaddch(window, j, col, '*')
+          printChar(window, j, col, '*')
           j -= 1
           jj += 1
         }
@@ -96,7 +96,7 @@ object Main {
       color.foreach(c => attributeOff(window, c))
     }
 
-    wnoutrefresh(window)
+    refreshWindow(window)
   }
 
   def showBytes(rate: Double): (Double, String) = {
@@ -121,7 +121,7 @@ object Main {
     eraseWindow(window)
     box(window, 0, 0)
 
-    mvwprintw(window, 0, 1, c"[ %s ]", title)
+    printFormatted(window, 0, 1, c"[ %s ]", title)
 
     val stats = List(
       ("Current", history.current(way), true),
@@ -138,7 +138,7 @@ object Main {
 
       stat.map(showBytes).foreach{ case (value, unit) =>
         val fmt = "%s %12.2f %s" + (if(isRate) "/s" else "")
-        mvwprintw(
+        printFormatted(
           window,
           line,
           1,
@@ -150,7 +150,7 @@ object Main {
       }
     }
 
-    wnoutrefresh(window)
+    refreshWindow(window)
   }
 
 

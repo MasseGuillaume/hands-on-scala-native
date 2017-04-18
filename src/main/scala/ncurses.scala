@@ -27,17 +27,21 @@ object ncurses {
   @name("werase")
   def eraseWindow(window: Ptr[Window]): CInt = extern
 
-  def wnoutrefresh(window: Ptr[Window]): CInt = extern
+  @name("wnoutrefresh")
+  def refreshWindow(window: Ptr[Window]): CInt = extern
 
   def doupdate(): CInt = extern
 
   def box(window: Ptr[Window], verch: ChType, horch: ChType): CInt = extern
 
-  def mvwprintw(window: Ptr[Window], y: CInt, x: CInt, fmt: CString, args: CVararg*): CInt = extern
+  @name("mvwprintw")
+  def printFormatted(window: Ptr[Window], y: CInt, x: CInt, fmt: CString, args: CVararg*): CInt = extern
 
-  def mvwaddch(window: Ptr[Window], y: CInt, x: CInt, ch: ChType): CInt = extern
+  @name("mvwaddch")
+  def printChar(window: Ptr[Window], y: CInt, x: CInt, ch: ChType): CInt = extern
 
-  def mvwvline(WINDwindow: Ptr[Window], y: CInt, x: CInt, ch: ChType, n: CInt): CInt = extern
+  @name("mvwvline")
+  def printLine(WINDwindow: Ptr[Window], y: CInt, x: CInt, ch: ChType, n: CInt): CInt = extern
 
   def noecho(): Unit = extern
 
