@@ -44,6 +44,7 @@ object Main {
       i += 1
       if(ci && redraw) {
         ciOk = i < 10
+
       }
     }
   }
