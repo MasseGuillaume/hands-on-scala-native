@@ -21,13 +21,15 @@ import Network._
 */
 
 object Main {
-  def waitLoop(body: => Unit): Unit = {
+  def waitLoop(ci: Boolean)(body: => Unit): Unit = {
     var timer  = 0L
     var redraw = false
     val tv     = stackalloc[timeval]
-
+    var i = 0
+    var ciOk = true
     var key = 0
-    while (key != 'q') {
+
+    while (key != 'q' && ciOk) {
       gettimeofday(tv, null)
       if (timer < tv.tv_sec) {
         timer = tv.tv_sec
@@ -39,6 +41,10 @@ object Main {
         redraw = false
       }
       key = getch()
+      i += 1
+      if(ci && redraw) {
+        ciOk = i < 10
+      }
     }
   }
 
@@ -156,6 +162,8 @@ object Main {
 
   def main(args: Array[String]): Unit = {
 
+    val ci = !args.isEmpty 
+
     val interfaceName =
       findInterface match {
         case Some(name) => name
@@ -197,7 +205,7 @@ object Main {
     val rxStats = newWindow(statsHeight, size.width / 2, graphHeight * 2, 0)
     val txStats = newWindow(statsHeight, size.width - size.width / 2, graphHeight * 2, size.width / 2)
 
-    waitLoop {
+    waitLoop(ci) {
       getCounter(interfaceName).foreach(data =>
         history += data
       )
