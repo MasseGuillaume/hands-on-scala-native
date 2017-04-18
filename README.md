@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/MasseGuillaume/hands-on-scala-native.svg?branch=master)](https://travis-ci.org/MasseGuillaume/hands-on-scala-native)
+
 # Hands-on Scala-Native
 
 ## Install Required Software
