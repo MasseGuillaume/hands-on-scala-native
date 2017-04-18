@@ -41,10 +41,9 @@ object Main {
         redraw = false
       }
       key = getch()
-      i += 1
       if(ci && redraw) {
+        i += 1
         ciOk = i < 10
-
       }
     }
   }
