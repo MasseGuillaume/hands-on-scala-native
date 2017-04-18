@@ -14,7 +14,7 @@ import Network._
 /*
 == Plan ==
   [x] 1: refresh loop
-  [x] 2: fing network interface (ifaddrs api)
+  [x] 2: find network interface (ifaddrs api)
   [x] 3: display bitrate
   [x] 4: draw windows (ncurses api)
   [x] 5: draw bitrate windows

@@ -110,6 +110,5 @@ object ncursesh {
     final val Cyan    = new Color(6)
     final val White   = new Color(7)
   }
-
   class Attribute(val value: CInt) extends AnyVal
 }

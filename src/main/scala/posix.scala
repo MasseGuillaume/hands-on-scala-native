@@ -10,18 +10,13 @@ object posix {
 }
 
 object posixh {
-  type va_list = CStruct0
-
   type time_t      = CLong
   type suseconds_t = CLong
   type timeval     = CStruct2[time_t, suseconds_t]
   type timezone    = CStruct0
 
   implicit class timevalOps(val ptr: Ptr[timeval]) extends AnyVal {
-    @inline def tv_sec: time_t       = !(ptr._1)
-    @inline def tv_usec: suseconds_t = !(ptr._2)
-
-    @inline def tv_sec_=(v: time_t): Unit       = !(ptr._1) = v
-    @inline def tv_usec_=(v: suseconds_t): Unit = !(ptr._2) = v
+    def tv_sec: time_t       = !(ptr._1)
+    def tv_usec: suseconds_t = !(ptr._2)
   }
 }
