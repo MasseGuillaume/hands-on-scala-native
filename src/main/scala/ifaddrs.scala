@@ -40,11 +40,11 @@ object IfaddrsH {
   implicit class IfaddrsOps(val ptr: Ptr[Ifaddrs]) extends AnyVal {
     // scala-native#634
     // format: off
-    def next: Ptr[Ifaddrs]  = (!(ptr._1)).cast[Ptr[Ifaddrs]]
-    def name: Ptr[CChar]    = !(ptr._2)
-    def flags: SiocgifFlags = new SiocgifFlags(!(ptr._3))
-    def addr: Ptr[SockAddr] = !(ptr._4)
-    def data: Ptr[Byte]     = !(ptr._7)
+    def next: Ptr[Ifaddrs]        = (!(ptr._1)).cast[Ptr[Ifaddrs]]
+    def name: Ptr[CChar]          = !(ptr._2)
+    def flags: SiocgifFlags       = new SiocgifFlags(!(ptr._3))
+    def addr: Option[SockAddrOps] = Option(new SockAddrOps(!(ptr._4)))
+    def data: Ptr[Byte]           = !(ptr._7)
     // format: on
 
     // scala-native#367 we need to manually box Ptr[T]

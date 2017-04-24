@@ -100,8 +100,7 @@ object Network {
       _.find(
         ifa =>
           fromCString(ifa.name) == interfaceName &&
-            ifa.addr != null &&
-            ifa.addr.family == Packet)
+            ifa.addr.map(_.family == Packet).getOrElse(false))
         .map(ifa => Counters(ifa.data.cast[Ptr[RtnlLinkStats]]))
     )
   }
