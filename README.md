@@ -5,6 +5,7 @@
 ## Install Required Software
 
 see http://www.scala-native.org/en/latest/user/setup.html
+and install ncurses
 
 or
 
