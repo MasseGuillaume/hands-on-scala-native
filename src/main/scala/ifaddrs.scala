@@ -27,13 +27,13 @@ object IfaddrsH {
   // format: off
   type Ifaddrs = CStruct7[
     // scala-native#634 should be Ptr[Ifaddrs]
-    Ptr[CByte],    // [1] ifa_next
+    Ptr[Byte],     // [1] ifa_next
     Ptr[CChar],    // [2] ifa_name
     CInt,          // [3] ifa_flags
     Ptr[SockAddr], // [4] ifa_addr
     Ptr[SockAddr], // [5] ifa_netmask
     Ptr[SockAddr], // [6] ifa_ifu
-    Ptr[CByte]     // [7] ifa_data
+    Ptr[Byte]      // [7] ifa_data
   ]
   // format: on
 

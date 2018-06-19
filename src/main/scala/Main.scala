@@ -57,24 +57,30 @@ object Main {
     printLine(window, 0, 1, '-', size.height - 1)
 
     val padding = 5
-    printFormatted(
-      window,
-      0, 
-      size.width - padding - title.size,
-      c"[ %s ]",
-      toCString(title)
-    )
+    native.Zone { implicit z =>
+      printFormatted(
+        window,
+        0, 
+        size.width - padding - title.size,
+        c"[ %s ]",
+        toCString(title)
+      )
+    }
 
-    interfaceName.foreach{ name =>
-      val text = s"[ snbwmon | interface: $name ]"
-      val center = (size.width - text.size) / 2
-      printFormatted(window, 0, center, toCString(text));
+    native.Zone { implicit z =>
+      interfaceName.foreach{ name =>
+        val text = s"[ snbwmon | interface: $name ]"
+        val center = (size.width - text.size) / 2
+        printFormatted(window, 0, center, toCString(text));
+      }
     }
 
     history.maximum(way).foreach{ max =>
       val (rate, unit) = showBytes(max)
   
-      printFormatted(window, 0, 1, c"[%.2f %s/s]", rate, toCString(unit))
+      native.Zone { implicit z =>
+        printFormatted(window, 0, 1, c"[%.2f %s/s]", rate, toCString(unit))
+      }
 
       color.foreach(c => attributeOn(window, c))
 
@@ -138,15 +144,17 @@ object Main {
 
       stat.map(showBytes).foreach{ case (value, unit) =>
         val fmt = "%s %12.2f %s" + (if(isRate) "/s" else "")
-        printFormatted(
-          window,
-          line,
-          1,
-          toCString(fmt),
-          toCString(label),
-          value,
-          toCString(unit)
-        )
+        native.Zone { implicit z =>
+          printFormatted(
+            window,
+            line,
+            1,
+            toCString(fmt),
+            toCString(label),
+            value,
+            toCString(unit)
+          )
+        }
       }
     }
 
